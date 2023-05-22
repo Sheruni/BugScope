@@ -5,6 +5,7 @@ from localizer_module import run_localizer
 from utils import read_and_process_csv, convert_to_result_format
 from image_text_extractor import extract_image_text
 import os
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -28,7 +29,7 @@ def process_data():
     
     # Append the filename to the desired folder path
     project_path = os.path.join(project_folder_path, file_name)
-    create_csv_from_project(project_path)
+    # create_csv_from_project(project_path)
 
 
     combined_image_text = ""
@@ -36,9 +37,10 @@ def process_data():
         for image_name in image_files:
             attachment_path = os.path.join(image_folder_path, image_name)
             image_text = extract_image_text(attachment_path, description)
-            combined_image_text += " ".join(image_text) + " "  # Adding a space between texts for better readability
-
+            combined_image_text += " ".join(image_text) + " "  
+            
     result_csv = run_localizer(description, tags)
+
     data = read_and_process_csv(result_csv)
     results = convert_to_result_format(data)
 

@@ -17,7 +17,7 @@ def read_and_process_csv(file_path):
             'similarity score': float(row['Similarity Score'])
             })
 
-    data.sort(key=lambda x: x['similarity score'])
+    data.sort(key=lambda x: -x['similarity score'])
 
     return data[:10]
 

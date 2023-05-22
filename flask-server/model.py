@@ -51,3 +51,9 @@ class Model(nn.Module):
         loss_fct = CrossEntropyLoss()
         loss = loss_fct(scores, torch.arange(bs, device=scores.device))
         return loss, code_vec, nl_vec
+    
+    
+    
+    
+    
+    

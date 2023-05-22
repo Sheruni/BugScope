@@ -9,8 +9,9 @@ def create_csv_from_project(project_path):
     max_length=512
     
     # Regular expressions for matching the start and end of code blocks
-    start_pattern = re.compile(r'(function.*?\(.*?\)|const|let|if|for|{|while|def|class|var).*?;', re.DOTALL)
-    end_pattern = re.compile(r"^\s*\}")  # Match the end of a code block
+    start_pattern = re.compile(r'(//.*|function.*?\(.*?\)|const|let|if|for|{|while|def|class|var).*?;', re.DOTALL)
+    end_pattern = re.compile(r"(.*;\s*|^\s*\})")  # Match the end of a code block or a line ending with ;
+
 
     # Define the allowed file extensions
     allowed_extensions = ['.txt', '.js', '.css', '.scss', '.html']

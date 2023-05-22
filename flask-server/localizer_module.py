@@ -9,16 +9,15 @@ import codecs
 
 def run_localizer(description, keywords):
     # Load the trained model and tokenizer
-    model_path = r"D:\bugscope model data\model-final.pt"
-    tokenizer_path = r"D:\bugscope model data\tokenizer-v4.pt"
+    model_path = r"D:\bugscope model data\model-v6.pt"
+    tokenizer_path = r"D:\bugscope model data\tokenizer-v6.pt"
 
-    # model = torch.load(model_path, map_location=torch.device('cpu'))
     tokenizer = torch.load(tokenizer_path, map_location=torch.device('cpu'))
     MODEL_CLASSES = {
     'roberta': (RobertaConfig, RobertaModel, RobertaTokenizer),
     }
 
-    pretrained_model = "microsoft/codebert-base"
+    pretrained_model = "microsoft/graphcodebert-base"
     model_type = 'roberta'
     config_name = pretrained_model
     model_name_or_path = pretrained_model
@@ -68,16 +67,20 @@ def run_localizer(description, keywords):
         max_length = max(len(tokenizer.tokenize(code)), len(tokenizer.tokenize(description)))
         
         with torch.no_grad():
-            code_input = tokenizer.encode(code, return_tensors="pt", padding='max_length', max_length=max_length, truncation=True).to(device)
-            nl_input = tokenizer.encode(description, return_tensors="pt", padding='max_length', max_length=max_length, truncation=True).to(device)
+            
+             # Tokenize the code, and description and pad it to 'max_length' if necessary, and move it to the device
+            code_input = tokenizer.encode(code, return_tensors="pt", padding='max_length', 
+                                          max_length=max_length, truncation=True).to(device)
+            nl_input = tokenizer.encode(description, return_tensors="pt", padding='max_length', 
+                                        max_length=max_length, truncation=True).to(device)
 
-            # Pass token_type_ids as None
+            # Pass both inputs through the model to get the embeddings of the code and description
             _, code_vec, nl_vec = model(code_input, nl_input, return_vec=False)
             bonus = calculate_bonus(keywords, code)
             similarity_score = torch.matmul(nl_vec, code_vec.t()).item()
             
             # Add the weighted bonus to the similarity score
-            weight_factor = 0.1  # Adjust this value as needed
+            weight_factor = 0.1  
             similarity_score += weight_factor * bonus
             
         return similarity_score
